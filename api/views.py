@@ -23,4 +23,4 @@ def index(request):
     return render(request, "logs/index.html")
 
 def room(request, room_name):
-    return render(request, "logs/room.html", {"room_name": room_name})
+    return render(request, "logs/iot.html", {"room_name": room_name})

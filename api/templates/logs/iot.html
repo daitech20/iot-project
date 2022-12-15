@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>IOT</title>
+        <!-- Link TailWind -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- ICon Font Awesome -->
+        <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+        <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+        <script src="https://kit.fontawesome.com/f662e8ecc5.js" crossorigin="anonymous"></script>
+    </head>
+<body>
+    {{ room_name|json_script:"room-name" }}
+    <main class="grid sm:grid-cols-2 grid-cols-1 xl:gap-[200px] lg:gap-[140px] md:gap-[80px] sm:gap-[40px] xl:px-[200px] lg:px-[140px] md:px-[80px] sm:px-[40px] px-[60px] py-[40px]">
+
+        <div class="sm:order-1 order-2 sm:pt-0 pt-[40px] ">
+            <div class="bg-[#918f8f11] text-[20px] font-[400] text-center rounded-[30px] sm:h-[400px] h-[250px] overflow-auto hidden" id="notif">
+                <textarea id="chat-log" rows="20" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 "></textarea>
+            </div>
+        </div>
+
+        <div class="sm:order-2 order-1 xl:px-[40px] lg:px-[20px]">
+            <div class="border-[10px] border-[#000000] rounded-[50px] text-center text-white">
+                <div class="bg-[#00e1ff] rounded-tl-[40px] rounded-tr-[40px] ">
+                    <div class="bg-black h-[20px] w-[140px] mx-auto rounded-br-[14px] rounded-bl-[14px] text-[#838282]">
+                        <ion-icon name="disc-outline"></ion-icon>
+                        <ion-icon name="ellipse-outline"></ion-icon>
+                    </div>
+                    <div class="flex items-center justify-between mx-[20px]">
+                        <div class="flex items-center">
+                            <ion-icon name="arrow-back-outline"></ion-icon>
+                            <h1>Back</h1>
+                        </div>
+                        <h1 class="text-[30px] font-[500]">IOT</h1>
+                        <div class="flex items-center">
+                            <ion-icon name="arrow-forward-outline"></ion-icon>
+                            <h1>Next</h1>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-black items-center flex justify-between px-[20px] py-[6px] border-b">
+                    <div>
+                        <button>
+                            <ion-icon name="home-outline" class="w-[24px] h-[24px]">
+                            </ion-icon>
+                        </button>
+                    </div>
+                    <div>
+                        <button>
+                            <ion-icon name="pause-circle-outline" class="w-[24px] h-[24px]"></ion-icon>
+                        </button>
+                    </div>
+                    <div>
+                        <button>
+                            <ion-icon name="chatbubble-outline" class="w-[24px] h-[24px]"></ion-icon>
+                        </button>
+                    </div>
+                    <div>
+                        <button>
+                            <ion-icon name="finger-print-outline" class="w-[24px] h-[24px]"></ion-icon>
+                        </button>
+                    </div>
+                    <div>
+                        <button>
+                            <ion-icon name="notifications-outline" class="w-[24px] h-[24px]"></ion-icon>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="xl:py-[100px] py-[80px]">
+                    <button class="bg-[#00e1ff] rounded-full text-white border-[#00e1ff] border-[4px]" onclick="Run()" id="btnRun">
+                        <ion-icon name="power-outline" class="h-[140px] w-[140px]"></ion-icon>
+                    </button>
+                </div>
+
+                <div class="text-black items-center flex justify-between px-[20px] py-[10px] border-t">
+                    <div>
+                        <button>
+                            <ion-icon name="wifi-outline" class="w-[30px] h-[30px]"></ion-icon>
+                        </button>
+                    </div>
+                    <div>
+                        <button>
+                            <ion-icon name="storefront-outline" class="w-[30px] h-[30px]"></ion-icon>
+                        </button>
+                    </div>
+                    <div>
+                        <button>
+                            <ion-icon name="scan-outline" class="w-[30px] h-[30px]"></ion-icon>
+                        </button>
+                    </div>
+                    <div>
+                        <button>
+                            <ion-icon name="radio-outline" class="w-[30px] h-[30px] "></ion-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        var CheckR=false
+        var btnRun=document.getElementById('btnRun');
+        var notif=document.getElementById('notif');
+        function Run(){
+            if(CheckR==false){
+                btnRun.classList.remove('text-white');
+                btnRun.classList.remove('bg-[#00e1ff]');
+                btnRun.classList.remove('border-[#00e1ff]');
+                notif.classList.remove('hidden');
+
+                btnRun.classList.add('bg-white');
+                btnRun.classList.add('text-red-600');
+                btnRun.classList.add('border-black');
+                CheckR=true;
+            }
+            else{
+                btnRun.classList.add('text-white');
+                btnRun.classList.add('bg-[#00e1ff]');
+                btnRun.classList.add('border-[#00e1ff]');
+                notif.classList.add('hidden');
+                btnRun.classList.remove('border-black');
+                btnRun.classList.remove('bg-white');
+                btnRun.classList.remove('text-red-600');
+                CheckR=false;
+            }
+        }
+
+        const roomName = JSON.parse(document.getElementById('room-name').textContent);
+
+        const chatSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/chat/'
+            + roomName
+            + '/'
+        );
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            document.querySelector('#chat-log').value += (data.message + '\n');
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+    </script>
+</body>
+</html>

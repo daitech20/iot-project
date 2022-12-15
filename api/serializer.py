@@ -18,7 +18,7 @@ class DataLogSerializer(serializers.ModelSerializer):
         channel_layer = get_channel_layer()
         datalog = super().save(**kwargs)
         async_to_sync(channel_layer.group_send)(
-            "chat_o", {"type": "chat_message", "message": str(datalog.time)}
+            "chat_iot", {"type": "chat_message", "message": str(datalog.time) + " co trom dot nhap!"}
         )
         return datalog
 
