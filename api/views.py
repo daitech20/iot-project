@@ -18,3 +18,9 @@ class ConfigUpdate(generics.RetrieveUpdateAPIView):
     queryset = Config.objects.all()
     serializer_class = ConfigSerializer
     lookup_field = 'id'
+
+def index(request):
+    return render(request, "logs/index.html")
+
+def room(request, room_name):
+    return render(request, "logs/room.html", {"room_name": room_name})
