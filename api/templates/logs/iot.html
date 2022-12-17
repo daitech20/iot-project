@@ -11,6 +11,8 @@
         <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
         <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
         <script src="https://kit.fontawesome.com/f662e8ecc5.js" crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
     </head>
 <body>
     {{ room_name|json_script:"room-name" }}
@@ -106,29 +108,36 @@
         var CheckR=false
         var btnRun=document.getElementById('btnRun');
         var notif=document.getElementById('notif');
-        function Run(){
-            if(CheckR==false){
-                btnRun.classList.remove('text-white');
-                btnRun.classList.remove('bg-[#00e1ff]');
-                btnRun.classList.remove('border-[#00e1ff]');
-                notif.classList.remove('hidden');
+        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+        axios.defaults.xsrfCookieName = "csrftoken";
+        axios.defaults.withCredentials = true;
+        axios.get('/api/update/toggle/1')
+        .then(response => {
+            CheckR=!response.data.value
+            Run()
+        })
+        .catch(error => 
+            console.log(error)
+        );
 
-                btnRun.classList.add('bg-white');
-                btnRun.classList.add('text-red-600');
-                btnRun.classList.add('border-black');
-                CheckR=true;
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
             }
-            else{
-                btnRun.classList.add('text-white');
-                btnRun.classList.add('bg-[#00e1ff]');
-                btnRun.classList.add('border-[#00e1ff]');
-                notif.classList.add('hidden');
-                btnRun.classList.remove('border-black');
-                btnRun.classList.remove('bg-white');
-                btnRun.classList.remove('text-red-600');
-                CheckR=false;
-            }
+            return cookieValue;
         }
+
+        const csrftoken = getCookie('csrftoken');
+        console.log(csrftoken)
 
         const roomName = JSON.parse(document.getElementById('room-name').textContent);
 
@@ -142,12 +151,94 @@
 
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
+            console.log(data)
             document.querySelector('#chat-log').value += (data.message + '\n');
+            if (data.toggle != CheckR && data.toggle != null) {
+                if (data.toggle) {
+                    btnRun.classList.remove('text-white');
+                    btnRun.classList.remove('bg-[#00e1ff]');
+                    btnRun.classList.remove('border-[#00e1ff]');
+                    notif.classList.remove('hidden');
+                    btnRun.classList.add('bg-white');
+                    btnRun.classList.add('text-red-600');
+                    btnRun.classList.add('border-black');
+                    console.log("on")
+                    CheckR=true;
+                }
+                else {
+                    btnRun.classList.add('text-white');
+                    btnRun.classList.add('bg-[#00e1ff]');
+                    btnRun.classList.add('border-[#00e1ff]');
+                    notif.classList.add('hidden');
+                    btnRun.classList.remove('border-black');
+                    btnRun.classList.remove('bg-white');
+                    btnRun.classList.remove('text-red-600');
+                    console.log("off")
+                    CheckR=false;
+
+                    
+                }
+            }
         };
 
         chatSocket.onclose = function(e) {
             console.error('Chat socket closed unexpectedly');
         };
+
+        function Run(){
+            if(CheckR==false){
+                btnRun.classList.remove('text-white');
+                btnRun.classList.remove('bg-[#00e1ff]');
+                btnRun.classList.remove('border-[#00e1ff]');
+                notif.classList.remove('hidden');
+
+                btnRun.classList.add('bg-white');
+                btnRun.classList.add('text-red-600');
+                btnRun.classList.add('border-black');
+                CheckR=true;
+                console.log("on")
+                chatSocket.send(JSON.stringify({
+                    'message': 'ON',
+                    'toggle': true
+                }));
+
+                axios.put('/api/update/toggle/1', {
+                    "value": 1
+                })
+                .then(response => {
+                    console.log(response.data)
+                })
+                .catch(error => 
+                    console.log(error)
+                );
+
+            }
+            else{
+                btnRun.classList.add('text-white');
+                btnRun.classList.add('bg-[#00e1ff]');
+                btnRun.classList.add('border-[#00e1ff]');
+                notif.classList.add('hidden');
+                btnRun.classList.remove('border-black');
+                btnRun.classList.remove('bg-white');
+                btnRun.classList.remove('text-red-600');
+                CheckR=false;
+                console.log("off")
+                chatSocket.send(JSON.stringify({
+                    'message': 'OFF',
+                    'toggle': false
+                }));
+
+                axios.put('/api/update/toggle/1', {
+                    "value": 0
+                })
+                .then(response => {
+                    console.log(response.data)
+                })
+                .catch(error => 
+                    console.log(error)
+                );
+            }
+        }
 
     </script>
 </body>

@@ -20,21 +20,30 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         # Leave room group
-        print("dang roi")
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
-        print("da roi")
 
     # Receive message from WebSocket
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
         # Send message to room group
-        await self.channel_layer.group_send(
-            self.room_group_name, {"type": "chat_message", "message": message}
-        )
+        if "toggle" in text_data_json:
+            toggle = text_data_json["toggle"]
+            await self.channel_layer.group_send(
+                self.room_group_name, {"type": "chat_message", "message": message, "toggle": toggle}
+            )
+        else:
+            await self.channel_layer.group_send(
+                self.room_group_name, {"type": "chat_message", "message": message}
+            )
 
     # Receive message from room group
     async def chat_message(self, event):
+        print("event", event)
         message = event["message"]
         # Send message to WebSocket
-        await self.send(text_data=json.dumps({"message": message}))
+        if "toggle" in event:
+            toggle = event["toggle"]
+            await self.send(text_data=json.dumps({"message": message, "toggle": toggle}))
+        else:
+            await self.send(text_data=json.dumps({"message": message}))
